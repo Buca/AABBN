@@ -1,12 +1,5 @@
 const AABBN = ( function() {
 
-function AABBN( min = [ -.5, -.5 ], max = [ .5, .5 ] ) {
-
-	this.min = min;
-	this.max = max;
-
-};
-
 var dimension$0 = 0,
 	delta$0 = 0,
 	pointsL$0 = 0,
@@ -16,6 +9,23 @@ var dimension$0 = 0,
 
 	_min = Math.min,
 	_max = Math.max;
+
+function AABBN( min = [ -.5, -.5 ], max = [ .5, .5 ], copy = true ) {
+
+	this.min = min;
+	this.max = max;
+
+};
+
+Object.defineProperty( AABBN.prototype, 'dimension', {
+
+	get: function() {
+
+		return this.min.length;
+
+	}
+
+} );
 
 Object.assign( AABBN.prototype, {
 
@@ -127,8 +137,22 @@ Object.assign( AABBN.prototype, {
 
 		for( i$0 = 0; i$0 !== dimension$0; i$0 ++ ) {
 
-			this.min[ i$0 ] -= amount[ i$0 ];
-			this.max[ i$0 ] += amount[ i$0 ];
+			min$0 = this.min[ i$0 ] - amount[ i$0 ];
+			max$0 = this.min[ i$0 ] + amount[ i$0 ];
+
+			if( min$0 > max$0 ) {
+
+				this.min[ i$0 ] = max$0;
+				this.max[ i$0 ] = min$0;
+
+			}
+
+			else {
+
+				this.min[ i$0 ] = min$0;
+				this.max[ i$0 ] = max$0;
+
+			}
 
 		}
 
@@ -172,7 +196,6 @@ Object.assign( AABBN.prototype, {
 
 	},
 
-	// Not done
 	extendFromPoints: function( points ) {
 
 		dimension$0 = this.min.length;
@@ -193,7 +216,6 @@ Object.assign( AABBN.prototype, {
 
 	},
 
-	// Not done
 	setFromPoints: function( points ) {
 
 		dimension$0 = this.min.length;
@@ -210,6 +232,36 @@ Object.assign( AABBN.prototype, {
 				this.max[ i$0 ] = _max( this.max[ i$0 ], points[ i$1 ][ i$0 ] );
 
 			}
+
+		}
+
+		return this;
+
+	},
+
+	extendFromSphere: function( position, radius ) {
+
+		dimension$0 = this.min.length;
+
+		for( i$0 = 0; i$0 !== dimension$0; i$0 ++ ) {
+
+			this.min[ i$0 ] = _min( this.min[ i$0 ], position[ i$0 ] - radius );
+			this.max[ i$0 ] = _max( this.max[ i$0 ], position[ i$0 ] + radius );
+
+		}
+
+		return this;
+
+	},
+
+	setFromSphere: function( position, radius ) {
+
+		dimension$0 = this.min.length;
+
+		for( i$0 = 0; i$0 !== dimension$0; i$0 ++ ) {
+
+			this.min[ i$0 ] = position[ i$0 ] - radius;
+			this.max[ i$0 ] = position[ i$0 ] + radius;
 
 		}
 
